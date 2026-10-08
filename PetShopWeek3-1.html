@@ -17,7 +17,7 @@
         <div v-if="showProduct">
             <h1 v-text="sitename"></h1>
             <button @click="toggleCheckout"> <i class="fa fa-shopping-cart" aria-hidden="true"></i> Checkout
-                ({{cartItemCount}})</button>
+                ({{cart.length}})</button>
 
             <!-- Product information -->
             <div v-for="product in products">
@@ -28,7 +28,7 @@
                 <p v-text="product.description"></p>
                 <p>Price: £{{product.price}}</p>
                 <p>{{product.availableInventory}} available.</p>
-                <button v-on:click="addItem(product)" v-bind:disabled="!canAddToCart">Add to cart</button>
+                <button v-on:click="addItem(product)" v-bind:disabled="!canAddToCart(product)">Add to cart</button>
             </div>
 
 
@@ -37,6 +37,13 @@
         <div v-else>
             <h1>Checkout Page</h1>
             <button @click="toggleCheckout"> Return to store </button>
+            <p>First name: <input v-model="firstName"></p>
+            <p>Last name: <input v-model="lastName"></p>
+            <p>Phone Number: <input v-model="phone"></p>
+
+            <h2>Order Summary</h2>
+            <p>Full name: {{firstName}} {{lastName}}</p>
+            <p>Phone number: {{phone}}</p>
         </div>
 
     </div>
@@ -57,15 +64,21 @@
                     },
                     products: productsArray,
                     cart: [],
-                    showProduct: true
+                    showProduct: true,
+                    firstName: "",
+                    lastName: "",
+                    phone: ""
                 }
             },
             computed: {
-                cartItemCount: function () {
-                    return this.cart.length;
-                },
-                canAddToCart: function () {
-                    return this.cart.length < this.product.availableInventory;
+                // cartItemCount: function () {
+                //     return this.cart.length;
+                // },
+                // canAddToCart: function () {
+                //     return this.cart.length < this.product.availableInventory;
+                // }
+                canShowCheckout: function () {
+                    return this.cart.length > 0;
                 }
             },
             methods: {
@@ -84,6 +97,9 @@
                         }
                     }
                     return count;
+                },
+                canAddToCart(product) {
+                    return this.cartItemCount(product.id) < product.availableInventory;
                 }
             }
         })
